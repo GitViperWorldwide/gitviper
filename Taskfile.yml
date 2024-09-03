@@ -1,0 +1,18 @@
+version: '3'
+
+tasks:
+  lint:
+    cmds:
+      - poetry run black --check .
+  
+  format:
+    cmds:
+      - poetry run black .
+  
+  test:
+    cmds:
+      - poetry run pytest -vvv --cov=gitviper tests/
+    
+  schema:
+    cmds:
+      - poetry run datamodel-codegen --input gitviper/schema/{{.CLI_ARGS}}.json --input-file-type jsonschema --output gitviper/schema/{{.CLI_ARGS}}.py  --output-model-type pydantic_v2.BaseModel
