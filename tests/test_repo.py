@@ -1,13 +1,12 @@
 import responses
 
+from gitviper.schema.repository import Repository
+from gitviper.schema.repository_create import RepositoryCreate
+from gitviper.schema.repository_update import RepositoryUpdate
+from responses import matchers
 from tests.helpers import BASE_URL, github_client
 
-
-@responses.activate
-def test_get_repo():
-    gh = github_client()
-
-    repo_response = """{
+repo_response = """{
   "id": 1296269,
   "node_id": "MDEwOlJlcG9zaXRvcnkxMjk2MjY5",
   "name": "Hello-World",
@@ -529,6 +528,11 @@ def test_get_repo():
   }
 }"""
 
+
+@responses.activate
+def test_get_repo():
+    gh = github_client()
+
     responses.get(f"{BASE_URL}/repos/a-user/a-repo", body=repo_response)
 
     result = gh.get_repository("a-repo", owner="a-user")
@@ -547,3 +551,92 @@ def test_get_repo():
 
     result3 = gh.get_repository("missing-repo", owner="a-user")
     assert result3.err().startswith("404")
+
+
+@responses.activate
+def test_update_repo():
+    gh = github_client()
+
+    responses.patch(
+        f"{BASE_URL}/repos/a-user/a-repo",
+        match=[matchers.json_params_matcher({"has_wiki": True})],
+        body=repo_response,
+    )
+
+    result = gh.update_repository(
+        "a-repo", RepositoryUpdate(has_wiki=True), owner="a-user"
+    )
+    assert result.err() is None
+    assert isinstance(result.ok(), Repository)
+
+    responses.patch(
+        f"{BASE_URL}/repos/a-user/another-repo",
+        match=[matchers.json_params_matcher({"has_wiki": True})],
+        body="{}",
+    )
+
+    result2 = gh.update_repository(
+        "another-repo", RepositoryUpdate(has_wiki=True), owner="a-user"
+    )
+    assert result2.err() is not None
+
+
+@responses.activate
+def test_delete_repo():
+    gh = github_client()
+
+    responses.delete(f"{BASE_URL}/repos/a-user/a-repo", status=204)
+
+    result = gh.delete_repository("a-repo", owner="a-user")
+    assert result.err() is None
+
+    responses.delete(f"{BASE_URL}/repos/a-user/another-repo", status=404)
+
+    result = gh.delete_repository("another-repo", owner="a-user")
+    assert result.err() is not None
+
+
+@responses.activate
+def test_list_org_repos():
+    gh = github_client()
+
+    responses.get(f"{BASE_URL}/orgs/an-org/repos", body=f"[{repo_response}]")
+
+    result = gh.list_org_repositories(org="an-org")
+    assert result.err() is None
+    assert len(result.ok()) == 1
+    assert result.ok()[0].name == "Hello-World"
+
+
+@responses.activate
+def test_create_org_repo():
+    gh = github_client()
+
+    responses.post(
+        f"{BASE_URL}/orgs/an-org/repos",
+        match=[
+            matchers.json_params_matcher(
+                {"name": "new-repo", "description": "a description"}
+            )
+        ],
+        body=repo_response,
+    )
+
+    result = gh.create_org_repository(
+        RepositoryCreate(name="new-repo", description="a description"), org="an-org"
+    )
+
+    assert result.err() is None
+    assert isinstance(result.ok(), Repository)
+
+
+@responses.activate
+def test_list_user_repos():
+    gh = github_client()
+
+    responses.get(f"{BASE_URL}/users/a-user/repos", body=f"[{repo_response}]")
+
+    result = gh.list_user_repositories(username="a-user")
+    assert result.err() is None
+    assert len(result.ok()) == 1
+    assert result.ok()[0].name == "Hello-World"
