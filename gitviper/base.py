@@ -4,6 +4,7 @@ import jwt, re, time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from gitviper.constants import Version
+from gitviper.exceptions import AuthenticationException
 from gitviper.requester import Requester
 from gitviper.schema.installation_token import InstallationToken
 from requests import Timeout
@@ -98,9 +99,11 @@ class GithubBase(Requester):
                 self.token_expiry = datetime.fromisoformat(data.expires_at)
                 self.session.headers.update({"Authorization": f"Bearer {data.token}"})
             else:
-                raise Exception(f"Unable to get app installations: {token_resp.text}")
+                raise AuthenticationException(
+                    f"Unable to get app installations: {token_resp.text}"
+                )
         else:
-            raise Exception(
+            raise AuthenticationException(
                 "A personal access token or both app id and private key must be specified"
             )
 

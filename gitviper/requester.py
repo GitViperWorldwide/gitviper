@@ -1,6 +1,10 @@
 from __future__ import annotations
 import re, requests
 
+from gitviper.exceptions import (
+    InvalidRestExpressionException,
+    MissingReplacementException,
+)
 from requests_toolbelt import sessions
 from typing import Any, Optional
 
@@ -35,7 +39,9 @@ class Requester:
     ) -> requests.Response:
         parts = REST_EXPRESSION.match(method_and_url)
         if not parts:
-            raise Exception(f"Invalid REST expression: {method_and_url}")
+            raise InvalidRestExpressionException(
+                f"Invalid REST expression: {method_and_url}"
+            )
 
         method = parts.group("method")
         url = parts.group("url")
@@ -43,7 +49,7 @@ class Requester:
             var_name = replacement.group("var_name")
             val = kwargs.pop(var_name, None) or self.default_replacements.get(var_name)
             if val is None:
-                continue
+                raise MissingReplacementException(f"{var_name} not included in kwargs")
 
             url = url.replace(replacement.group(0), val)
 

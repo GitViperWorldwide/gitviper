@@ -7,6 +7,8 @@ from gitviper.schema.organization import Organization
 from gitviper.schema.repository import Repository
 from gitviper.schema.repository_create import RepositoryCreate
 from gitviper.schema.repository_update import RepositoryUpdate
+from gitviper.schema.team import Team
+from gitviper.schema.team_update import TeamUpdate
 
 
 class GithubClient(GithubBase):
@@ -30,7 +32,7 @@ class GithubClient(GithubBase):
             api_version=api_version,
         )
 
-    def get_organization(self, org: str) -> Result[Organization, str]:
+    def get_organization(self, org: Optional[str] = None) -> Result[Organization, str]:
         return self.get("/orgs/{org}", Organization, org=org)
 
     def get_repository(
@@ -59,3 +61,31 @@ class GithubClient(GithubBase):
         self, data: RepositoryCreate, org: Optional[str] = None
     ) -> Result[Repository, str]:
         return self.send("POST /orgs/{org}/repos", data, Repository, org=org)
+
+    def list_org_teams(self, org: Optional[str] = None) -> Result[List[Team], str]:
+        return self.paginate("/orgs/{org}/teams", Team, org=org)
+
+    def get_org_team(
+        self, team_slug: str, org: Optional[str] = None
+    ) -> Result[Team, str]:
+        return self.get(
+            "/orgs/{org}/teams/{team_slug}", Team, org=org, team_slug=team_slug
+        )
+
+    def update_org_team(
+        self, team_slug: str, data: TeamUpdate, org: Optional[str] = None
+    ) -> Result[Team, str]:
+        return self.send(
+            "PATCH /orgs/{org}/teams/{team_slug}",
+            data,
+            Team,
+            org=org,
+            team_slug=team_slug,
+        )
+
+    def delete_org_team(
+        self, team_slug: str, org: Optional[str] = None
+    ) -> Result[None, str]:
+        return self.delete(
+            "/orgs/{org}/teams/{team_slug}", org=org, team_slug=team_slug
+        )

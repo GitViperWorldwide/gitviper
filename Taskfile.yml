@@ -11,7 +11,7 @@ tasks:
   
   test:
     cmds:
-      - poetry run pytest -vvv --cov=gitviper tests/
+      - poetry run pytest -vvv --cov-report term-missing --cov=gitviper tests/
     
   schema:
     cmds:
