@@ -8,3 +8,7 @@ class InvalidRestExpressionException(Exception):
 
 class MissingReplacementException(Exception):
     """A variable in the url was not supplied a replacement value"""
+
+
+class InvalidPaginatedData(Exception):
+    """The received data was not in the expected list format"""

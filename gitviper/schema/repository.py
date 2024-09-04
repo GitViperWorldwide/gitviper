@@ -251,7 +251,7 @@ class TemplateRepository(BaseModel):
         ..., description="Whether downloads are enabled.", examples=[True]
     )
     has_discussions: Optional[bool] = Field(
-        False, description="Whether discussions are enabled.", examples=[True]
+        None, description="Whether discussions are enabled.", examples=[True]
     )
     archived: bool = Field(..., description="Whether the repository is archived.")
     disabled: bool = Field(
@@ -563,7 +563,7 @@ class Repository(BaseModel):
     has_wiki: bool = Field(..., examples=[True])
     has_pages: bool
     has_downloads: Optional[bool] = Field(None, examples=[True])
-    has_discussions: bool = Field(..., examples=[True])
+    has_discussions: Optional[bool] = Field(None, examples=[True])
     archived: bool
     disabled: bool = Field(
         ..., description="Returns whether or not this repository disabled."
