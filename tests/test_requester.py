@@ -25,11 +25,7 @@ def test_rest_parsing():
 
     responses.get(
         f"{base_url}/stuff/replaced/stuff",
-        match=[
-            matchers.query_param_matcher(
-                {"some_query": "value", "anotherquery": "another value"}
-            )
-        ],
+        match=[matchers.query_param_matcher({"some_query": "value", "anotherquery": "another value"})],
         body="test passed",
     )
 

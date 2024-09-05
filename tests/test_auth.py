@@ -235,9 +235,7 @@ def test_jwt():
 
 @responses.activate
 def test_app_auth():
-    token_resp = responses.post(
-        f"{BASE_URL}/app/installations/99/access_tokens", body=access_token_response
-    )
+    token_resp = responses.post(f"{BASE_URL}/app/installations/99/access_tokens", body=access_token_response)
     responses.get(
         f"{BASE_URL}/rate_limit",
         match=[

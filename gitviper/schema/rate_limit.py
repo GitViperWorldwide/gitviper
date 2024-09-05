@@ -85,17 +85,11 @@ class Resources(BaseModel):
     search: Search = Field(..., title="Rate Limit")
     code_search: Optional[CodeSearch] = Field(None, title="Rate Limit")
     source_import: Optional[SourceImport] = Field(None, title="Rate Limit")
-    integration_manifest: Optional[IntegrationManifest] = Field(
-        None, title="Rate Limit"
-    )
+    integration_manifest: Optional[IntegrationManifest] = Field(None, title="Rate Limit")
     code_scanning_upload: Optional[CodeScanningUpload] = Field(None, title="Rate Limit")
-    actions_runner_registration: Optional[ActionsRunnerRegistration] = Field(
-        None, title="Rate Limit"
-    )
+    actions_runner_registration: Optional[ActionsRunnerRegistration] = Field(None, title="Rate Limit")
     scim: Optional[Scim] = Field(None, title="Rate Limit")
-    dependency_snapshots: Optional[DependencySnapshots] = Field(
-        None, title="Rate Limit"
-    )
+    dependency_snapshots: Optional[DependencySnapshots] = Field(None, title="Rate Limit")
 
 
 class Rate(BaseModel):

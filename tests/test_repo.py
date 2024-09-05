@@ -563,9 +563,7 @@ def test_update_repo():
         body=repo_response,
     )
 
-    result = gh.update_repository(
-        "a-repo", RepositoryUpdate(has_wiki=True), owner="a-user"
-    )
+    result = gh.update_repository("a-repo", RepositoryUpdate(has_wiki=True), owner="a-user")
     assert result.err() is None
     assert isinstance(result.ok(), Repository)
 
@@ -575,9 +573,7 @@ def test_update_repo():
         body="{}",
     )
 
-    result2 = gh.update_repository(
-        "another-repo", RepositoryUpdate(has_wiki=True), owner="a-user"
-    )
+    result2 = gh.update_repository("another-repo", RepositoryUpdate(has_wiki=True), owner="a-user")
     assert result2.err() is not None
 
 
@@ -614,17 +610,11 @@ def test_create_org_repo():
 
     responses.post(
         f"{BASE_URL}/orgs/an-org/repos",
-        match=[
-            matchers.json_params_matcher(
-                {"name": "new-repo", "description": "a description"}
-            )
-        ],
+        match=[matchers.json_params_matcher({"name": "new-repo", "description": "a description"})],
         body=repo_response,
     )
 
-    result = gh.create_org_repository(
-        RepositoryCreate(name="new-repo", description="a description"), org="an-org"
-    )
+    result = gh.create_org_repository(RepositoryCreate(name="new-repo", description="a description"), org="an-org")
 
     assert result.err() is None
     assert isinstance(result.ok(), Repository)
@@ -710,6 +700,4 @@ def test_replace_repo_topics():
 }""",
     )
 
-    gh.replace_repository_topics(
-        "a-repo", Topics(names=["abc", "def", "ghi", "jkl"]), owner="a-user"
-    )
+    gh.replace_repository_topics("a-repo", Topics(names=["abc", "def", "ghi", "jkl"]), owner="a-user")

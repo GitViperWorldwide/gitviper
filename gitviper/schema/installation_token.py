@@ -220,13 +220,9 @@ class RepositorySelection(Enum):
 class InstallationToken(BaseModel):
     token: str
     expires_at: str
-    permissions: Optional[Permissions] = Field(
-        None, description="The permissions granted to the user access token."
-    )
+    permissions: Optional[Permissions] = Field(None, description="The permissions granted to the user access token.")
     repository_selection: Optional[RepositorySelection] = None
     repositories: Optional[List[Repository]] = None
     single_file: Optional[str] = Field(None, examples=["README.md"])
     has_multiple_single_files: Optional[bool] = Field(None, examples=[True])
-    single_file_paths: Optional[List[str]] = Field(
-        None, examples=[["config.yml", ".github/issue_TEMPLATE.md"]]
-    )
+    single_file_paths: Optional[List[str]] = Field(None, examples=[["config.yml", ".github/issue_TEMPLATE.md"]])

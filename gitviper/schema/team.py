@@ -35,13 +35,9 @@ class Parent(BaseModel):
         description="URL for the team",
         examples=["https://api.github.com/organizations/1/team/1"],
     )
-    members_url: str = Field(
-        ..., examples=["https://api.github.com/organizations/1/team/1/members{/member}"]
-    )
+    members_url: str = Field(..., examples=["https://api.github.com/organizations/1/team/1/members{/member}"])
     name: str = Field(..., description="Name of the team", examples=["Justice League"])
-    description: Optional[str] = Field(
-        ..., description="Description of the team", examples=["A great team."]
-    )
+    description: Optional[str] = Field(..., description="Description of the team", examples=["A great team."])
     permission: str = Field(
         ...,
         description="Permission that the team will have for its repositories",
@@ -58,9 +54,7 @@ class Parent(BaseModel):
         examples=["notifications_enabled"],
     )
     html_url: AnyUrl = Field(..., examples=["https://github.com/orgs/rails/teams/core"])
-    repositories_url: AnyUrl = Field(
-        ..., examples=["https://api.github.com/organizations/1/team/1/repos"]
-    )
+    repositories_url: AnyUrl = Field(..., examples=["https://api.github.com/organizations/1/team/1/repos"])
     slug: str = Field(..., examples=["justice-league"])
     ldap_dn: Optional[str] = Field(
         None,
@@ -96,20 +90,14 @@ class Team(BaseModel):
         description="Permission that the team will have for its repositories",
         examples=["push"],
     )
-    members_url: str = Field(
-        ..., examples=["https://api.github.com/organizations/1/team/1/members{/member}"]
-    )
-    repositories_url: AnyUrl = Field(
-        ..., examples=["https://api.github.com/organizations/1/team/1/repos"]
-    )
+    members_url: str = Field(..., examples=["https://api.github.com/organizations/1/team/1/members{/member}"])
+    repositories_url: AnyUrl = Field(..., examples=["https://api.github.com/organizations/1/team/1/repos"])
     parent: Optional[Parent] = None
     members_count: int = Field(..., examples=[3])
     repos_count: int = Field(..., examples=[10])
     created_at: AwareDatetime = Field(..., examples=["2017-07-14T16:53:42Z"])
     updated_at: AwareDatetime = Field(..., examples=["2017-08-17T12:37:15Z"])
-    organization: Organization = Field(
-        ..., description="Team Organization", title="Team Organization"
-    )
+    organization: Organization = Field(..., description="Team Organization", title="Team Organization")
     ldap_dn: Optional[str] = Field(
         None,
         description="Distinguished Name (DN) that team maps to within LDAP environment",
@@ -132,6 +120,4 @@ class TeamUpdate(BaseModel):
         None,
         description="**Deprecated**. The permission that new repositories will be added to the team with when none is specified.",
     )
-    parent_team_id: Optional[int] = Field(
-        None, description="The ID of a team to set as the parent team."
-    )
+    parent_team_id: Optional[int] = Field(None, description="The ID of a team to set as the parent team.")

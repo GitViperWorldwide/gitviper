@@ -108,13 +108,9 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
                 self.token_expiry = datetime.fromisoformat(data.expires_at)
                 self.session.headers.update({"Authorization": f"Bearer {data.token}"})
             else:
-                raise AuthenticationException(
-                    f"Unable to get app installations: {token_resp.text}"
-                )
+                raise AuthenticationException(f"Unable to get app installations: {token_resp.text}")
         else:
-            raise AuthenticationException(
-                "A personal access token or (app id, private key, and installation ID) must be specified"
-            )
+            raise AuthenticationException("A personal access token or (app id, private key, and installation ID) must be specified")
 
     def _check_token_expiry(self) -> None:
         if self.token_expiry is None:
@@ -132,9 +128,7 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
             # TODO wait
             pass
 
-    def get[
-        T: BaseModel
-    ](self, url: str, data_class: T, **kwargs: Any) -> Result[T, str]:
+    def get[T: BaseModel](self, url: str, data_class: T, **kwargs: Any) -> Result[T, str]:
         self._check_rate_limit()
         self._check_token_expiry()
 
@@ -152,15 +146,9 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
             model = data_class.model_validate(resp.json())
             return Ok(model)
         except Exception:
-            return Err(
-                f"Unhandled exception parsing response data: {format_exc()}\n\nResponse: {resp.text}"
-            )
+            return Err(f"Unhandled exception parsing response data: {format_exc()}\n\nResponse: {resp.text}")
 
-    def paginate[
-        T: BaseModel
-    ](
-        self, url: str, data_class: T, sub_property: Optional[str] = None, **kwargs: Any
-    ) -> Result[List[T], str]:
+    def paginate[T: BaseModel](self, url: str, data_class: T, sub_property: Optional[str] = None, **kwargs: Any) -> Result[List[T], str]:
         kwargs.setdefault("per_page", 100)
         kwargs.setdefault("page", 1)
 
@@ -207,40 +195,24 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
 
     def send[
         T: BaseModel
-    ](
-        self,
-        method_and_url: str,
-        data: BaseModel,
-        response_data_class: T,
-        **kwargs: Any,
-    ) -> Result[T, str]:
+    ](self, method_and_url: str, data: BaseModel, response_data_class: T, **kwargs: Any,) -> Result[T, str]:
         self._check_rate_limit()
         self._check_token_expiry()
 
         try:
-            resp = self.rest(
-                method_and_url, body=data.model_dump_json(exclude_none=True), **kwargs
-            )
+            resp = self.rest(method_and_url, body=data.model_dump_json(exclude_none=True), **kwargs)
             self._update_rate_limit(resp)
             if not resp.ok:
-                return Err(
-                    f"{resp.status_code} received from '{method_and_url}': {resp.text}"
-                )
+                return Err(f"{resp.status_code} received from '{method_and_url}': {resp.text}")
         except Timeout:
-            return self.send(
-                method_and_url, data, response_data_class, **kwargs
-            )  # retry
+            return self.send(method_and_url, data, response_data_class, **kwargs)  # retry
         except Exception:
-            return Err(
-                f"Unhandled exception calling '{method_and_url}': {format_exc()}"
-            )
+            return Err(f"Unhandled exception calling '{method_and_url}': {format_exc()}")
 
         try:
             return Ok(response_data_class.model_validate(resp.json()))
         except Exception:
-            return Err(
-                f"Unhandled exception parsing response data: {format_exc()}\n\nResponse: {resp.text}"
-            )
+            return Err(f"Unhandled exception parsing response data: {format_exc()}\n\nResponse: {resp.text}")
 
     def delete(self, url: str, **kwargs) -> Result[None, str]:
         self._check_rate_limit()

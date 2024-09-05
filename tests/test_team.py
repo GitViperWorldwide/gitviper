@@ -91,11 +91,7 @@ def test_update_team():
 
     responses.patch(
         f"{BASE_URL}/orgs/an-org/teams/a-team",
-        match=[
-            matchers.json_params_matcher(
-                {"description": "a new description", "permission": "admin"}
-            )
-        ],
+        match=[matchers.json_params_matcher({"description": "a new description", "permission": "admin"})],
         body=team_response,
     )
 

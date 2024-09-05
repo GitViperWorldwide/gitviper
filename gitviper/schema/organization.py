@@ -22,27 +22,13 @@ class Organization(BaseModel):
     id: int = Field(..., examples=[1])
     node_id: str = Field(..., examples=["MDEyOk9yZ2FuaXphdGlvbjE="])
     url: AnyUrl = Field(..., examples=["https://api.github.com/orgs/github"])
-    repos_url: AnyUrl = Field(
-        ..., examples=["https://api.github.com/orgs/github/repos"]
-    )
-    events_url: AnyUrl = Field(
-        ..., examples=["https://api.github.com/orgs/github/events"]
-    )
-    hooks_url: Optional[str] = Field(
-        None, examples=["https://api.github.com/orgs/github/hooks"]
-    )
-    issues_url: Optional[str] = Field(
-        None, examples=["https://api.github.com/orgs/github/issues"]
-    )
-    members_url: Optional[str] = Field(
-        None, examples=["https://api.github.com/orgs/github/members{/member}"]
-    )
-    public_members_url: Optional[str] = Field(
-        None, examples=["https://api.github.com/orgs/github/public_members{/member}"]
-    )
-    avatar_url: Optional[str] = Field(
-        None, examples=["https://github.com/images/error/octocat_happy.gif"]
-    )
+    repos_url: AnyUrl = Field(..., examples=["https://api.github.com/orgs/github/repos"])
+    events_url: AnyUrl = Field(..., examples=["https://api.github.com/orgs/github/events"])
+    hooks_url: Optional[str] = Field(None, examples=["https://api.github.com/orgs/github/hooks"])
+    issues_url: Optional[str] = Field(None, examples=["https://api.github.com/orgs/github/issues"])
+    members_url: Optional[str] = Field(None, examples=["https://api.github.com/orgs/github/members{/member}"])
+    public_members_url: Optional[str] = Field(None, examples=["https://api.github.com/orgs/github/public_members{/member}"])
+    avatar_url: Optional[str] = Field(None, examples=["https://github.com/images/error/octocat_happy.gif"])
     description: Optional[str] = Field(None, examples=["A great organization"])
     name: Optional[str] = Field(None, examples=["github"])
     company: Optional[str] = Field(None, examples=["GitHub"])
@@ -69,24 +55,14 @@ class Organization(BaseModel):
     default_repository_permission: Optional[str] = None
     members_can_create_repositories: Optional[bool] = Field(None, examples=[True])
     two_factor_requirement_enabled: Optional[bool] = Field(None, examples=[True])
-    members_allowed_repository_creation_type: Optional[str] = Field(
-        None, examples=["all"]
-    )
-    members_can_create_public_repositories: Optional[bool] = Field(
-        None, examples=[True]
-    )
-    members_can_create_private_repositories: Optional[bool] = Field(
-        None, examples=[True]
-    )
-    members_can_create_internal_repositories: Optional[bool] = Field(
-        None, examples=[True]
-    )
+    members_allowed_repository_creation_type: Optional[str] = Field(None, examples=["all"])
+    members_can_create_public_repositories: Optional[bool] = Field(None, examples=[True])
+    members_can_create_private_repositories: Optional[bool] = Field(None, examples=[True])
+    members_can_create_internal_repositories: Optional[bool] = Field(None, examples=[True])
     members_can_create_pages: Optional[bool] = Field(None, examples=[True])
     members_can_create_public_pages: Optional[bool] = Field(None, examples=[True])
     members_can_create_private_pages: Optional[bool] = Field(None, examples=[True])
-    members_can_fork_private_repositories: Optional[bool] = Field(
-        None, examples=[False]
-    )
+    members_can_fork_private_repositories: Optional[bool] = Field(None, examples=[False])
     web_commit_signoff_required: Optional[bool] = Field(None, examples=[False])
     advanced_security_enabled_for_new_repositories: Optional[bool] = Field(
         None,
@@ -113,12 +89,10 @@ class Organization(BaseModel):
         description="**Deprecated.** Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead.\n\nWhether secret scanning is automatically enabled for new repositories and repositories transferred to this organization.\n\nThis field is only visible to organization owners or members of a team with the security manager role.",
         examples=[False],
     )
-    secret_scanning_push_protection_enabled_for_new_repositories: Optional[bool] = (
-        Field(
-            None,
-            description="**Deprecated.** Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead.\n\nWhether secret scanning push protection is automatically enabled for new repositories and repositories transferred to this organization.\n\nThis field is only visible to organization owners or members of a team with the security manager role.",
-            examples=[False],
-        )
+    secret_scanning_push_protection_enabled_for_new_repositories: Optional[bool] = Field(
+        None,
+        description="**Deprecated.** Please use [code security configurations](https://docs.github.com/rest/code-security/configurations) instead.\n\nWhether secret scanning push protection is automatically enabled for new repositories and repositories transferred to this organization.\n\nThis field is only visible to organization owners or members of a team with the security manager role.",
+        examples=[False],
     )
     secret_scanning_push_protection_custom_link_enabled: Optional[bool] = Field(
         None,

@@ -65,9 +65,7 @@ class Requester:
         else:
             self.session = requests.sessions.Session()
 
-    def rest(
-        self, method_and_url: str, body: Optional[Any] = None, **kwargs: Any
-    ) -> requests.Response:
+    def rest(self, method_and_url: str, body: Optional[Any] = None, **kwargs: Any) -> requests.Response:
         """Wrapper around requests.Request
 
         Args:
@@ -95,8 +93,6 @@ class Requester:
 
             url = url.replace(replacement.group(0), str(val))
 
-        resp: requests.Response = self.session.request(
-            f"{parts.method}", url, data=body, params=kwargs
-        )
+        resp: requests.Response = self.session.request(f"{parts.method}", url, data=body, params=kwargs)
 
         return resp

@@ -15,10 +15,6 @@ class Commit(BaseModel):
 class Tag(BaseModel):
     name: str = Field(..., examples=["v0.1"])
     commit: Commit
-    zipball_url: AnyUrl = Field(
-        ..., examples=["https://github.com/octocat/Hello-World/zipball/v0.1"]
-    )
-    tarball_url: AnyUrl = Field(
-        ..., examples=["https://github.com/octocat/Hello-World/tarball/v0.1"]
-    )
+    zipball_url: AnyUrl = Field(..., examples=["https://github.com/octocat/Hello-World/zipball/v0.1"])
+    tarball_url: AnyUrl = Field(..., examples=["https://github.com/octocat/Hello-World/tarball/v0.1"])
     node_id: str

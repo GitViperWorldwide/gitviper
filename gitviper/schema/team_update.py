@@ -40,6 +40,4 @@ class TeamUpdate(BaseModel):
         None,
         description="**Deprecated**. The permission that new repositories will be added to the team with when none is specified.",
     )
-    parent_team_id: Optional[int] = Field(
-        None, description="The ID of a team to set as the parent team."
-    )
+    parent_team_id: Optional[int] = Field(None, description="The ID of a team to set as the parent team.")
