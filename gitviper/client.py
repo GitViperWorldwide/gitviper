@@ -55,6 +55,7 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
         pat: Optional[str] = None,
         app_id: Optional[str] = None,
         app_pk: Optional[str] = None,
+        app_pk_algorithm: Optional[str] = "RS256",
         installation_id: Optional[int] = None,
         default_org: Optional[str] = None,
         base_url: str = "https://api.github.com/",
@@ -63,6 +64,7 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
         self.pat = pat
         self.app_id = app_id
         self.app_pk = app_pk
+        self.app_pk_algorithm = app_pk_algorithm
         self.installation_id = installation_id
         self.api_version = api_version
         self.token_expiry: Optional[datetime] = None
@@ -81,20 +83,23 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
         self.authenticate()
         self.get_rate_limit()
 
+    def generate_jwt(self) -> str:
+        now = int(time.time())
+        return str(
+            jwt.encode(
+                {"iat": now, "exp": now + 600, "iss": int(self.app_id)},
+                self.app_pk.replace("\\n", "\n"),
+                algorithm=self.app_pk_algorithm,
+            )
+        )
+
     def authenticate(self) -> None:
         if self.pat:
             self.session.headers.update({"Authorization": f"Bearer {self.pat}"})
-        elif self.app_id and self.app_pk:
-            now = int(time.time())
-            encoded_jwt = jwt.encode(
-                {"iat": now, "exp": now + 600, "iss": int(self.app_id)},
-                self.app_pk.replace("\\n", "\n"),
-                algorithm="RS256",
-            )
-
+        elif self.app_id and self.app_pk and self.installation_id:
             token_resp = self.session.post(
                 f"/app/installations/{self.installation_id}/access_tokens",
-                headers={"Authorization": f"Bearer {encoded_jwt}"},
+                headers={"Authorization": f"Bearer {self.generate_jwt()}"},
             )
 
             if token_resp.ok:
@@ -108,7 +113,7 @@ class GithubClient(Requester, RepositoryMixins, OrgMixins, TeamMixins):
                 )
         else:
             raise AuthenticationException(
-                "A personal access token or both app id and private key must be specified"
+                "A personal access token or (app id, private key, and installation ID) must be specified"
             )
 
     def _check_token_expiry(self) -> None:

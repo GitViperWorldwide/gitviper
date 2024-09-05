@@ -1,6 +1,8 @@
 from __future__ import annotations
 import re, requests
 
+from dataclasses import dataclass
+from enum import StrEnum
 from gitviper.exceptions import (
     InvalidRestExpressionException,
     MissingReplacementException,
@@ -8,10 +10,31 @@ from gitviper.exceptions import (
 from requests_toolbelt import sessions
 from typing import Any, Optional
 
-REST_EXPRESSION = re.compile(
-    r"(?P<method>GET|OPTIONS|HEAD|PUT|PATCH|POST|DELETE) (?P<url>.+)"
-)
 URL_REPLACEMENT = re.compile(r"{(?P<var_name>[a-z_]+)}")
+
+
+class HTTPMethod(StrEnum):
+    GET = "GET"
+    OPTIONS = "OPTIONS"
+    HEAD = "HEAD"
+    PUT = "PUT"
+    PATCH = "PATCH"
+    POST = "POST"
+    DELETE = "DELETE"
+
+
+@dataclass
+class MethodAndURL:
+    method: HTTPMethod
+    url: str
+
+    @classmethod
+    def from_string(cls, input: str) -> MethodAndURL:
+        try:
+            method, url = input.split(" ", 1)
+            return cls(HTTPMethod(method), url)
+        except:
+            raise InvalidRestExpressionException()
 
 
 class Requester:
@@ -26,6 +49,14 @@ class Requester:
     """
 
     def __init__(self, base_url: Optional[str] = None, **kwargs: Any) -> None:
+        """Initializes a Requester session
+
+        Args:
+            base_url: an optional base URL to prepend to partial URLs supplied to the rest method
+
+            kwargs: key/value pairs that will be the defaults for variable replacements in the rest method's supplied URL.
+        """
+
         self.default_replacements = kwargs
         self.session: sessions.BaseUrlSession | requests.sessions.Session
 
@@ -37,24 +68,35 @@ class Requester:
     def rest(
         self, method_and_url: str, body: Optional[Any] = None, **kwargs: Any
     ) -> requests.Response:
-        parts = REST_EXPRESSION.match(method_and_url)
-        if not parts:
-            raise InvalidRestExpressionException(
-                f"Invalid REST expression: {method_and_url}"
-            )
+        """Wrapper around requests.Request
 
-        method = parts.group("method")
-        url = parts.group("url")
+        Args:
+            method_and_url: a HTTP method (GET|OPTIONS|HEAD|PUT|PATCH|POST|DELETE) followed by a url with optional variables in {variable_name} format.
+            body: optional data to send as the body of the request.
+            kwargs: any argument with a name matching a variable in the URL will replace that variable, all other arguments are sent as query parameters.
+
+        Returns:
+            A requests.Response object
+
+        Raises:
+            InvalidRestExpressionException: the method_and_url do not match the expected pattern
+
+            MissingReplacementException: a variable in the URL was not supplied a kwarg value
+        """
+
+        parts = MethodAndURL.from_string(method_and_url)
+
+        url = parts.url
         for replacement in URL_REPLACEMENT.finditer(url):
             var_name = replacement.group("var_name")
             val = kwargs.pop(var_name, None) or self.default_replacements.get(var_name)
             if val is None:
                 raise MissingReplacementException(f"{var_name} not included in kwargs")
 
-            url = url.replace(replacement.group(0), val)
+            url = url.replace(replacement.group(0), str(val))
 
         resp: requests.Response = self.session.request(
-            method, url, data=body, params=kwargs
+            f"{parts.method}", url, data=body, params=kwargs
         )
 
         return resp

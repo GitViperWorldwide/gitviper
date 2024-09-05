@@ -1,8 +1,7 @@
 from result import Result
 from typing import List, Optional
 
-from gitviper.schema.team import Team
-from gitviper.schema.team_update import TeamUpdate
+from gitviper.schema.team import Team, TeamUpdate
 
 
 class TeamMixins:
@@ -37,4 +36,6 @@ class TeamMixins:
     def list_repository_teams(
         self, repo: str, owner: Optional[str] = None
     ) -> Result[List[Team], str]:
-        return self.paginate("/repos/{owner}/{repo}/teams", Team, owner=owner)
+        return self.paginate(
+            "/repos/{owner}/{repo}/teams", Team, owner=owner, repo=repo
+        )

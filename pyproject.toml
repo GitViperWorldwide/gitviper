@@ -9,7 +9,7 @@ readme = "README.md"
 python = "^3.12"
 requests-toolbelt = "^1.0.0"
 pydantic = "^2.8.2"
-pyjwt = "^2.9.0"
+pyjwt = {extras = ["crypto"], version = "^2.9.0"}
 result = "^0.17.0"
 
 

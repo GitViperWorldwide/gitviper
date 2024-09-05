@@ -1,9 +1,7 @@
 from result import Result
 from typing import List, Optional
 
-from gitviper.schema.repository import Repository
-from gitviper.schema.repository_create import RepositoryCreate
-from gitviper.schema.repository_update import RepositoryUpdate
+from gitviper.schema.repository import Repository, RepositoryCreate, RepositoryUpdate
 from gitviper.schema.tag import Tag
 from gitviper.schema.topic import Topic, Topics
 

@@ -1,20 +1,28 @@
-import json, responses
+import json, jwt, responses
 
+from datetime import datetime, timezone
+from gitviper.client import GithubClient, Rate
 from pydantic import BaseModel
+from requests.adapters import CaseInsensitiveDict
 from responses import matchers
 
-from tests.helpers import BASE_URL, github_client
+from tests.helpers import BASE_URL, DEFAULT_RATE_HEADERS, github_client
 
 
-@responses.activate
-def test_pat_auth():
-    gh = github_client()
-    assert gh.rate.remaining == 42
+def test_rate_parsing():
+    now = datetime.now(timezone.utc)
+    rate = Rate.from_headers(
+        CaseInsensitiveDict(
+            **{
+                "x-ratelimit-remaining": "not a number",
+                "x-ratelimit-reset": "not a number",
+            }
+        )
+    )
 
-
-def test_app_auth():
-    # TODO
-    pass
+    assert rate.remaining == 1
+    assert rate.reset.year == now.year
+    assert rate.reset.day == now.day
 
 
 @responses.activate

@@ -1,8 +1,8 @@
 import responses
 
-from gitviper.schema.repository import Repository
-from gitviper.schema.repository_create import RepositoryCreate
-from gitviper.schema.repository_update import RepositoryUpdate
+from gitviper.schema.repository import Repository, RepositoryCreate, RepositoryUpdate
+from gitviper.schema.topic import Topics
+
 from responses import matchers
 from tests.helpers import BASE_URL, github_client
 
@@ -640,3 +640,76 @@ def test_list_user_repos():
     assert result.err() is None
     assert len(result.ok()) == 1
     assert result.ok()[0].name == "Hello-World"
+
+
+@responses.activate
+def test_list_repo_tags():
+    gh = github_client()
+
+    responses.get(
+        f"{BASE_URL}/repos/a-user/a-repo/tags",
+        match=[matchers.query_param_matcher({"page": "1", "per_page": "100"})],
+        body="""[
+  {
+    "name": "v0.1",
+    "commit": {
+      "sha": "c5b97d5ae6c19d5c5df71a34c7fbeeda2479ccbc",
+      "url": "https://api.github.com/repos/octocat/Hello-World/commits/c5b97d5ae6c19d5c5df71a34c7fbeeda2479ccbc"
+    },
+    "zipball_url": "https://github.com/octocat/Hello-World/zipball/v0.1",
+    "tarball_url": "https://github.com/octocat/Hello-World/tarball/v0.1",
+    "node_id": "MDQ6VXNlcjE="
+  }
+]""",
+    )
+
+    result = gh.list_repository_tags("a-repo", owner="a-user")
+    assert result.err() is None
+    assert len(result.ok()) == 1
+    assert result.ok()[0].commit.sha == "c5b97d5ae6c19d5c5df71a34c7fbeeda2479ccbc"
+
+
+@responses.activate
+def test_list_repo_topics():
+    gh = github_client()
+
+    responses.get(
+        f"{BASE_URL}/repos/a-user/a-repo/topics",
+        match=[matchers.query_param_matcher({"page": "1", "per_page": "100"})],
+        body="""{
+  "names": [
+    "octocat",
+    "atom",
+    "electron",
+    "api"
+  ]
+}""",
+    )
+
+    result = gh.list_repository_topics("a-repo", owner="a-user")
+
+    assert result.err() is None
+    assert len(result.ok()) == 4
+    assert result.ok()[0] == "octocat"
+
+
+@responses.activate
+def test_replace_repo_topics():
+    gh = github_client()
+
+    responses.put(
+        f"{BASE_URL}/repos/a-user/a-repo/topics",
+        match=[matchers.json_params_matcher({"names": ["abc", "def", "ghi", "jkl"]})],
+        body="""{
+  "names": [
+    "abc",
+    "def",
+    "ghi",
+    "jkl"
+  ]
+}""",
+    )
+
+    gh.replace_repository_topics(
+        "a-repo", Topics(names=["abc", "def", "ghi", "jkl"]), owner="a-user"
+    )
